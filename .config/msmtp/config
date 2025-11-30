@@ -1,0 +1,11 @@
+account mailbox.org
+host smtp.mailbox.org
+port 465
+tls on
+tls_starttls off
+auth on
+user sebastiano@tronto.net
+passwordeval cat ~/.ssh/mailbox.org
+from sebastiano@tronto.net
+
+account default: mailbox.org

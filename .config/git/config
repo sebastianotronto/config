@@ -1,0 +1,11 @@
+[user]
+	email = sebastiano@tronto.net
+	name = Sebastiano Tronto
+[credential]
+	helper = store
+[pull]
+	rebase = false
+[sendemail]
+	smtpserver = /usr/bin/msmtp
+[push]
+	autoSetupRemote = true

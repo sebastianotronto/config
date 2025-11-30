@@ -1,0 +1,18 @@
+set showmode
+set ruler
+set filec=	
+set noflash
+
+map gg 1G
+
+" Copy/paste clipboard
+map ;v :r!xsel -o -b
+map ;C :w:!xedit-filter <"%" | xsel -i -b
+" Copy/paste clipboard (works linewise)
+map ;c !'axsel -i -b; xsel -o -b
+map ;x !'axsel -i -b
+
+" Some external scripts
+map ;f :!dmenu-urlselect <"%" | xargs open-url 
+map ;m :r!dmenu-mail-aliaseskJ
+map ;a :r!dmenu-filepicker $HOMEkJ

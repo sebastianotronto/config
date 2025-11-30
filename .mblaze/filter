@@ -1,0 +1,6 @@
+text/plain: mflow
+text/html: open-stdin
+text/rtf: open-stdin
+image: open-stdin
+application: open-stdin
+message/rfc822: mflow | awk -f /home/sebastiano/.mblaze/digest-headers.awk

@@ -1,0 +1,18 @@
+IMAPStore mailbox-remote
+Host imap.mailbox.org
+User sebastiano@tronto.net
+PassCmd "cat ~/.ssh/mailbox.org"
+TLSType STARTTLS
+
+MaildirStore mailbox-local
+Path ~/mail/
+Inbox ~/mail/INBOX
+SubFolders Verbatim
+
+Channel mailbox
+Far :mailbox-remote:
+Near :mailbox-local:
+Patterns * !Archives
+Create Both
+Expunge Both
+SyncState *

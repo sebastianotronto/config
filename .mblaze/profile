@@ -1,0 +1,5 @@
+Local-Mailbox: Sebastiano Tronto <sebastiano@tronto.net>
+Alternate-Mailboxes: sebastiano.tronto@lunganega.org,sebastiano.tronto@gmail.com
+Sendmail: /usr/bin/msmtp
+Outbox: /home/sebastiano/mail/Sent
+Scan-Format: %c%r %-3n %10d %30f %2i%s
