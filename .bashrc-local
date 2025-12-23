@@ -36,7 +36,7 @@ alias rm='trash-put'
 alias ls='ls --color=auto'
 alias clip='clip -m fzf'
 alias bm='dmenu-bookmarks -m fzf'
-alias feed='feed -m fzf'
+alias f='feed get && feed -m fzf menu'
 alias svi='vi "+so $HOME/.virc-spaces"'
 
 # Email management (mblaze)
