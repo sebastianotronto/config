@@ -21,9 +21,6 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # Locale overrides
 export LC_COLLATE="C"
 
-# Dart dev
-export PATH="$HOME/dev/dart-sdk/bin:$PATH"
-
 ### Program-specific
 export FZF_DEFAULT_OPTS="-e -i -m --no-bold --no-color --layout=reverse-list"
 export LYNX_CFG="$XDG_CONFIG_HOME/lynx/lynx.cfg"
@@ -51,9 +48,8 @@ s()     { mshow $@ | templess; }
 sht()   { mshow -A text/html $@; }
 n()     { mshow .+1 | templess; }
 
-# emscripten
-startem() { EMSDK_QUIET=1 source "$HOME/dev/emsdk/emsdk_env.sh"; }
-startem # Comment this out when not working regularly with emscripten
+# Comment out the next line when not working regularly with emscripten
+#EMSDK_QUIET=1 source "$HOME/dev/emsdk/emsdk_env.sh"
 
 # nissy build options
 export NISSY_BUILD_SANITIZE="address,undefined"
@@ -63,8 +59,6 @@ export RUSTUP_HOME="$HOME/dev/rustup"
 export CARGO_HOME="$HOME/dev/cargo"
 export PATH="$CARGO_HOME/bin:$PATH"
 startrust() { source "$CARGO_HOME/env"; }
-
-export PATH="$HOME/dev/gitlab-runner/bin:$PATH"
 
 # Session cookies are kept in .ssh
 . $HOME/.ssh/sessions
