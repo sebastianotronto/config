@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# My default terminal
+
+terminal=${TERMINAL:-"st -e tmux new-session "$@""}
+
+$terminal

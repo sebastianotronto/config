@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Calls one of the system-specific status scripts to display
+# a line of text with some status information (battery, date...)
+
+case "$(uname)" in
+OpenBSD)
+	status-openbsd
+	;;
+*)
+	status-linux
+	;;
+esac

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Open a mail composer.
+# Requires: mblaze, terminal
+
+terminal mcom "$@"

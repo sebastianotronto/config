@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Change volume and notify
+# Usage: volume {+n|-n}
+# Requires: pulsemixer, notify-send or similar
+
+#notify=notify-send
+notify=herbe
+
+newvol=$(pulsemixer --change-volume "$1" --get-volume | awk '{print $1}')
+
+pkill herbe # comment this line too if not using herbe
+$notify "Volume" "$newvol%"

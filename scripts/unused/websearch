@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Perform a web search
+
+browser=${BROWSER:-firefox}
+searchengine="https://www.startpage.com/sp/search?query="
+#searchengine="https://duckduckgo.com/?q="
+#searchendinge="https://www.google.com/search?q="
+
+arg=$(echo "$@" | sed 's/ /\+/g')
+[ -n "$arg" ] && spawn "$browser" "${searchengine}$arg"

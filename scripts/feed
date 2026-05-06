@@ -1,0 +1,97 @@
+#!/bin/sh
+
+# RSS feed manager
+
+# Requires: sfeed, sfeed_plain (get), dmenu, open-url (menu)
+
+# Usage: feed [-m menu] [get|menu|clear|show]
+
+dir=$HOME/box/sfeed
+feeddir=$dir/urls
+destdir=$dir/new
+readdir=$dir/last
+menu="${FEEDMENU:-dmenu -l 20 -i}"
+urlopener=open-url
+
+usage() {
+	echo "Usage: feed [get|menu|clear|show]"
+}
+
+getnew() {
+	for f in "$feeddir"/*; do
+		read -r url < "$f"
+		name=$(basename "$f")
+		printf '%s... ' "$name"
+
+		d="$destdir/$name"
+		r="$readdir/$name"
+
+		[ -f "$r" ] && read -r lr < "$r" || lr=0
+
+		# Get new feed items
+		tmp=$(mktemp)
+		curl -s "$url" | sfeed | \
+		awk -v lr="$lr" '$1 > lr {print $0}' | \
+		tee "$tmp" | sfeed_plain >> "$d"
+
+		# Update last time stamp
+		awk -v lr="$lr" '$1 > lr {lr=$1} END {print lr}' <"$tmp" >"$r"
+
+		printf 'downloaded\n'
+	done
+}
+
+show() {
+	for f in "$destdir"/*; do
+		ff=$(basename "$f")
+		if [ -s "$f" ]; then
+			sort -r "$f" | while read -r line; do
+				printf '%20s    %s\n' "$ff" "$line"
+			done
+		fi
+	done
+}
+
+selectmenu() {
+	$menu | awk '{print $NF}' | xargs $urlopener
+}
+
+while getopts "m:" opt; do
+	case "$opt" in
+		m)
+			menu="$OPTARG"
+			;;
+		*)
+			usage
+			exit 1
+			;;
+	esac
+done
+
+shift $((OPTIND - 1))
+
+if [ -z "$1" ]; then
+	usage
+	exit 1
+fi
+
+case "$1" in
+	get)
+		getnew
+		countnew=$(cat "$destdir"/* | wc -l)
+		echo "$countnew new feed items"
+		;;
+	menu)
+		show | selectmenu
+		;;
+	clear)
+		rm -r "$destdir"/*
+		;;
+	show)
+		show
+		;;
+	*)
+		usage
+		exit 1
+		;;
+esac

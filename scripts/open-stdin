@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Saves standard input in a temporary file and opens it (spawn)
+# Usage: open-stdin 
+# Requires: open-file (or set $OPENER to e.g. xdg-open)
+
+folder=${TMPDIR:-/tmp}
+open=${OPENER:-open-file}
+
+tempfile=$(mktemp -p "$folder")
+
+cat > "$tempfile" && $open $@ "$tempfile"

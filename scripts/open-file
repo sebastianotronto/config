@@ -1,0 +1,122 @@
+#!/bin/sh
+
+# Inspired by https://github.com/salman-abedin/launch.sh
+# Launches files based on their mimetypes
+# Requires: dmenu_path or similar (fallback), dmenu-filepicker
+
+# Usage: open-file [-m menu] [-s launcher] [-t mimetype] [files...]
+
+menu="dmenu -i -l 15"
+
+# Change default apps here
+video=${VIDEO:-vlc}
+music=${MUSIC:-vlc}
+pdf=${PDF:-zathura}
+img="${IMGVIEW:-nsxiv}"
+word="${WORDS:-libreoffice}"
+sheet="${SHEETS:-libreoffice}"
+html="${BROWSER:-firefox} --new-window"
+xedit="${XEDIT:-xedit}"
+
+usage() {
+	echo "Usage: open-file [-m MENU] [-s LAUNCHER] [-t MIMETYPE] [files...]"
+}
+
+openfile() {
+	f="$*"
+	localmime="$mimetype"
+
+	[ ! -f "$f" ] && echo "$f: bad argument" && exit 1
+	[ -z "$mimetype" ] && localmime="$(file --mime-type "$f" -bL)"
+
+	prog=""
+	case "$localmime" in
+		video/*)
+			prog="$video"
+			;;
+		audio/*)
+			prog="$music"
+			;;
+		application/pdf | application/postscript | image/vnd.djvu)
+			prog="$pdf"
+			;;
+		image/*)
+			prog="$img"
+			;;
+		application/msword | \
+		application/vnd.oasis.opendocument.text | text/rtf | \
+		application/vnd.openxmlformats-officedocument.wordprocessingml.*)
+			prog="$word"
+			;;
+		application/ms-excel | \
+		application/vnd.oasis.opendocument.spreadsheet | \
+		application/vnd.openxmlformats-officedocument.spreadsheetml.*)
+			prog="$sheet"
+			;;
+		text/html | text/enriched)
+			prog="$html"
+			;;
+		text/*)
+			prog="$xedit"
+			;;
+		application/zip)
+			prog="unzip"
+			;;
+		application/x-rar-compressed)
+			prog="unrar"
+			;;
+		application/x-archive | application/x-tar | \
+		application/x-bzip2 | application/gzip | application/x-lzip | \
+		application/x-lzma | application/x-xz | application/x-gtar)
+			prog="tar -tavf"
+			;;
+		application/java-archive)
+			prog="java -jar"
+			;;
+		*)
+			if [ "$menu" = dmenu ]; then
+				menuprompt="-p \"How to open $f? \""
+			else
+				menuprompt="--prompt=\"How to open $f? \""
+			fi
+			prog=$(dmenu_path | $menu "$menuprompt")
+			;;
+	esac
+
+	if [ -n "$prog" ]; then
+		$launcher $prog "$f"
+	else
+		exit 1
+	fi
+}
+
+while getopts "m:s:t:" opt; do
+	case "$opt" in
+		m)
+			menu="$OPTARG"
+			;;
+		s)
+			launcher="$OPTARG"
+			;;
+		t)
+			mimetype="$OPTARG"
+			;;
+		*)
+			usage
+			exit 1
+			;;
+	esac
+done
+
+shift $((OPTIND - 1))
+
+if [ -n "$1" ]; then
+	while [ -n "$1" ]; do
+		openfile "$1" &
+		shift
+	done
+else
+	dmenu-filepicker -m "$menu" | while read -r line; do
+		openfile "$line" &
+	done
+fi

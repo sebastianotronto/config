@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# A dmenu-based file picker (prints selected file to stdout)
+# Requires: dmenu (or similar)
+
+# Usage: dmenu-filepicker [-m menu] [path]
+
+menu="dmenu -i -l 15"
+
+usage() {
+	echo "Usage: dmenu-filepicker [-m MENU] [PATH]"
+}
+
+while getopts "m:" opt; do
+	case "$opt" in
+		m)
+			menu="$OPTARG"
+			;;
+		*)
+			usage
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+
+fullpath=$(realpath "${@:-"$(pwd)"}")
+
+while true; do
+	if [ "$sel" = "." ]; then
+		echo "$fullpath" | sed 's|/\.||'
+		break
+	elif [ -d "$fullpath" ] || [ -z "$fullpath" ]; then
+		if [ -z "$fullpath" ]; then fp="/"; else fp="$fullpath"; fi
+		sel=$(ls -a "$fp" | sed 's|.*/||' | $menu)
+		if [ "$sel" = ".." ]; then
+			fullpath=$(echo "$fullpath" | sed "s|/[^/]*$||")
+		else
+			fullpath=$(echo "$sel" | sed "s|^|$fullpath/|")
+		fi
+	else
+		echo "$fullpath"
+		break
+	fi
+
+	[ -z "$sel" ] && break
+done

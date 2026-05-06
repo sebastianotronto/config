@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Prompts menu to shutdown/reboot/close dwm
+# Requires: dmenu (or equivalent), dwm (optional)
+
+# Usage: dmenu-dwm-sessionmanager [-m menu]
+
+#sudo=sudo
+sudo=doas
+wmname="dwm"
+shutdown_cmd="$sudo poweroff"
+reboot_cmd="$sudo reboot"
+closewm_cmd="pkill $wmname"
+
+menu="dmenu -i"
+prompt="Do you want to quit?"
+
+usage() {
+	echo "Usage: dmenu-dwm-sessionmanager [-m MENU]"
+}
+
+while getopts "m:" opt; do
+	case "$opt" in
+		m)
+			menu="$OPTARG"
+			;;
+		*)
+			usage
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+
+value=$(printf 'Shutdown\nReboot\nQuit dwm\n' | $menu -p "$prompt")
+
+if [ "$value" = "Shutdown" ]; then
+	$shutdown_cmd
+elif [ "$value" = "Reboot" ]; then
+	$reboot_cmd
+elif [ "$value" = "Quit $wmname" ]; then
+	$closewm_cmd
+fi
+

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Open stdin in a text editor and sends modified selection to stdout
+# Requires: xedit
+
+f=$(mktemp)
+cat > "$f"
+xedit "$f" && cat "$f" 
+

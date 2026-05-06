@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Merge multiple pdf files into one
+# Requires: gs
+
+# Usage: mergepdf [-o outname] file1.pdf file2.pdf ...
+
+outname=merged.pdf
+
+usage() {
+	echo "Usage: mergepdf [-o OUTFILE] file1.pdf file2.pdf ..."
+}
+
+while getopts "o:" opt; do
+	case "$opt" in
+		o)
+			outname="$OPTARG"
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+
+gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="$outname" "$@"
