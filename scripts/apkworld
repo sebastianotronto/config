@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Install and remove packages from a configuration file.
+
+# Usage: apkworld [file]
+# Requires: apk (Alpine Linux package manager)
+
+PACKAGES="${1:-$HOME/.config/alpine-packages}"
+
+cp /etc/apk/world /etc/apk/world.backup
+cat "$PACKAGES" | sed 's/#.*//' | grep -v '^[:space:]*$' > /etc/apk/world
+apk fix

@@ -1,0 +1,42 @@
+# Base system packages (installed by default)
+alpine-base busybox-mdev-openrc doas grub-efi openssh openssl
+
+# Firmware (installed by default, system-dependent)
+linux-firmware-i915 linux-firmware-intel linux-firmware-mediatek linux-firmware-other
+linux-firmware-rtl_bt linux-firmware-rtl_nic linux-firmware-xe linux-lts
+
+# Documentation
+docs mandoc-apropos
+
+# Wifi and other hardware control
+iwd openresolv pciutils bluez
+
+# Audio
+pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils pulsemixer
+
+# Core tools (non-X)
+coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck
+kbd # For console keyboard configuration
+syncthing fzf sfeed yt-dlp mblaze msmtp oath-toolkit
+
+# Development tools
+build-base git gdb valgrind clang20 python3 rust cargo hare
+lowdown darkhttpd # Both used for updating my website
+libx11-dev libxft-dev libxinerama-dev
+
+# Xorg xorg-server
+xinit eudev mesa-dri-gallium xf86-video-intel xf86-input-libinput xf86-input-synaptics
+setxkbmap xsel xbanish xsetroot xwallpaper xev slock
+
+# X applications
+firefox libreoffice telegram-desktop vlc imv-x11
+zathura-djvu zathura-pdf-mupdf zathura-ps
+arandr
+
+# Fonts, but like a gazillion of them
+font-terminus font-noto font-noto-extra font-arabic-misc
+font-misc-cyrillic font-mutt-misc font-screen-cyrillic
+font-winitzki-cyrillic font-cronyx-cyrillic font-noto-arabic
+font-noto-armenian font-noto-cherokee font-noto-devanagari
+font-noto-ethiopic font-noto-georgian font-noto-hebrew font-noto-lao
+font-noto-malayalam font-noto-tamil font-noto-thaana font-noto-thai
