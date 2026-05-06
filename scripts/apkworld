@@ -3,10 +3,13 @@
 # Install and remove packages from a configuration file.
 
 # Usage: apkworld [file]
-# Requires: apk (Alpine Linux package manager)
+# Requires: apk (Alpine Linux package manager), doas (or sudo)
 
 PACKAGES="${1:-$HOME/.config/alpine-packages}"
+SUDO_CMD=doas
 
-cp /etc/apk/world /etc/apk/world.backup
-cat "$PACKAGES" | sed 's/#.*//' | grep -v '^[:space:]*$' > /etc/apk/world
-apk fix
+tmp_file=$(mktemp)
+doas cp /etc/apk/world /etc/apk/world.backup
+cat "$PACKAGES" | sed 's/#.*//' | grep -v '^[:space:]*$' > $tmp_file
+doas mv $tmp_file /etc/apk/world
+doas apk fix

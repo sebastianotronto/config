@@ -1,0 +1,135 @@
+#!/bin/sh
+
+# Set up my configuration on a new Alpine Linux installation.
+
+print_log() {
+	printf '\n>>> %s \n\n' "$@"
+}
+
+set -e  # Abort on first error
+
+
+print_log "Installing git and cloning the config repo"
+
+doas apk add git
+cd ~
+git init .
+git remote add origin https://git.tronto.net/config
+git fetch && git checkout -f master
+git remote set-url origin git@tronto.net:config
+git remote set-url origin --add --push git@github.com:sebastianotronto/config
+
+
+print_log "Installing software from alpine repositories"
+
+tmp_repo_file=$(mktemp)
+main_repo="$(grep main /etc/apk/repositories)"
+community_repo="$(echo "$main_repo" | sed 's/main/community/')"
+printf '%s\n%s\n' "$main_repo" "$community_repo" > $tmp_repo_file
+doas mv $tmp_repo_file /etc/apk/repositories
+
+./scripts/apkworld
+
+
+print_log "Installing and configuring desktop environment"
+
+doas setup-xorg-base
+
+mkdir -p src
+cd src
+for i in dmenu dwm st; do
+	git clone https://git.suckless.org/$i
+	cd $i
+	cp ~/.config/$i/config.h ./config.h
+	make && doas make install
+done
+cd
+
+
+print_log "Swapping Escape and Caps Lock in console"
+
+tmp_kmap_file=$(mktemp)
+tmp_loadkmap_file=$(mktemp)
+printf 'keycode 1 = Caps_Lock\nkeycode 58 = Escape\n' > $tmp_kmap_file
+doas loadkeys $tmp_kmap_file
+dumpkmap > us-swapesc.bmap
+gzip us-swapesc.bmap
+doas mv us-swapesc.bmap.gz /etc/keymap/
+printf 'KEYMAP=/etc/keymap/us-swapesc.bmap.gz\n' > $tmp_loadkmap_file
+doas mv $tmp_loadkmap_file /etc/conf.d/loadkmap
+
+
+print_log "Setting up ACPI (see https://wiki.alpinelinux.org/wiki/Power_management)"
+
+tmp_acpi_file=$(mktemp)
+cat <<EOF > $tmp_acpi_file
+xhci="$(grep XHCI /proc/acpi/wakeup | awk '{print $3}')"
+[ "$xhci" == '*enabled' ] && echo XHCI > /proc/acpi/wakeup
+echo mem > /sys/power/state
+EOF
+
+for dir in LID PWRF; do
+	doas mkdir -p /etc/acpi/$dir
+	doas cp $tmp_acpi_file /etc/acpi/$dir/00000080
+	doas chmod +x /etc/acpi/$dir/00000080
+done
+
+
+print_log "Setting up WiFi (iwd) (see https://wiki.alpinelinux.org/wiki/Iwd)"
+
+tmp_iwd_file=$(mktemp)
+cat <<EOF > $tmp_iwd_file
+[General]
+EnableNetworkConfiguration=True
+
+[Network]
+NameResolvingService=resolvconf
+EOF
+
+doas mv $tmp_iwd_file /etc/iwd/main.conf
+
+doas rc-update add iwd boot
+doas rc-update del networking boot
+doas rc-service --ifstarted wpa_supplicant stop
+doas rc-service iwd start
+
+
+print_log "Setting up bluetooth (see https://wiki.alpinelinux.org/wiki/Bluetooth)"
+
+doas modprobe btusb
+doas adduser sebastiano lp
+doas rc-update add bluetooth
+doas rc-service bluetooth start
+
+
+print_log "Setting up SyncThing"
+
+tmp_syncthing_file=$(mktemp)
+doas print 'SYNCTHING_USER="sebastiano"\n' > $tmp_syncthing_file
+mv $tmp_syncthing_file /etc/conf.d/syncthing
+doas rc-update add syncthing
+doas rc-service start syncthing
+
+
+print_log "Generating SSH keys"
+
+ssh-keygen
+
+
+echo ""
+echo "All done!"
+echo ""
+echo "You should log out and back in to apply some of the changes."
+echo "Additionally, you may want to perform the following manual steps:"
+echo "   1. Connect to WiFi again. The default network manager has been"
+echo "      replaced by iwd."
+echo "   2. Add your SSH key to various servers, namely:"
+echo "      1a. Artemisia"
+echo "      1b. pizoc (both regular user and git)"
+echo "      1c. github"
+echo "   3. Share folders in SyncThing, including but not limited to:"
+echo "      2a. box with Artemisia, pizoc and phone"
+echo "      2b. file-drop with phone"
+echo "   4. Copy your mailbox.org password to .ssh/mailbox.org"
+echo ""
+echo "Enjoy!"
