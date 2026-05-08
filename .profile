@@ -1,6 +1,8 @@
 set -o vi
 
+PATH="$HOME/scripts:$PATH"
 PS1="[\h \W] \$ "
+export LC_COLLATE="C"
 
 export HISTCONTROL=ignoredups
 export HISTFILE=$HOME/.sh_history
@@ -9,28 +11,24 @@ export HISTSIZE=10000
 # Standard stuff and variables for my scripts
 export EDITOR=vi
 export VISUAL=vi
-export TERMINAL="ptyxis --new-window"
-export XEDIT="gnome-text-editor"
-export NOTIFY=notify-send
-export OPENER=xdg-open #or set to open-file from scripts
+export XEDIT=xedit
+export NOTIFY=notify
+export OPENER=open-file
 export BROWSER=firefox
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
-export PYTHON_COLORS=0
 
-# Locale overrides
-export LC_COLLATE="C"
-
-### Program-specific
+# Program-specific stuff
 export FZF_DEFAULT_OPTS="-e -i -m --no-bold --no-color --layout=reverse-list"
 export LYNX_CFG="$XDG_CONFIG_HOME/lynx/lynx.cfg"
 export LYNX_LSS="$XDG_CONFIG_HOME/lynx/lynx.lss"
+export PYTHON_COLORS=0
 
 ### Aliases and functions
 alias bc='bc -q /home/sebastiano/box/bc.library'
-alias o='xdg-open'
-alias rm='trash-put'
+alias o='open-file'
+alias rm='trash rm'
 alias ls='ls --color=auto'
 alias clip='clip -m fzf'
 alias bm='dmenu-bookmarks -m fzf'
@@ -49,17 +47,8 @@ s()     { mshow $@ | templess; }
 sht()   { mshow -A text/html $@; }
 n()     { mshow .+1 | templess; }
 
-# Comment out the next line when not working regularly with emscripten
-#EMSDK_QUIET=1 source "$HOME/dev/emsdk/emsdk_env.sh"
-
 # nissy build options
-export NISSY_BUILD_SANITIZE="address,undefined"
-
-# Rust things
-export RUSTUP_HOME="$HOME/dev/rustup"
-export CARGO_HOME="$HOME/dev/cargo"
-export PATH="$CARGO_HOME/bin:$PATH"
-startrust() { source "$CARGO_HOME/env"; }
+#export NISSY_BUILD_SANITIZE="address,undefined"
 
 # Session cookies are kept in .ssh
-. $HOME/.ssh/sessions
+[ -f $HOME/.ssh/sessions ] && . $HOME/.ssh/sessions

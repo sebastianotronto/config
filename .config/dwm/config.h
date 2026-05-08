@@ -5,8 +5,8 @@ static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=18" };
-static const char dmenufont[]       = "monospace:size=18";
+static const char *fonts[]          = { "monospace:size=14" };
+static const char dmenufont[]       = "monospace:size=14";
 
 /* Dark scheme: */
 /*
@@ -72,15 +72,12 @@ static const Layout layouts[] = {
 /* commands */
 static const char *termcmd[]  = { "st", NULL };
 static char dmenumon[2] = "0"; /* used in dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
-/* Colors in dmenu config.h built from source
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon,
                                                "-fn", dmenufont,
                                                "-nb", col_gray1,
                                                "-nf", col_gray3,
                                                "-sb", col_cyan,
                                                "-sf", col_gray4, NULL };
-*/
 
 /* Necessary library for some multimedia key names */
 #include <X11/XF86keysym.h>
@@ -179,7 +176,6 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,  XK_Return,    spawn, SHCMD("terminal") },
 	{ MODKEY|ShiftMask,  XK_backslash, spawn, SHCMD("popup-terminal") },
 	{ MODKEY|ShiftMask,  XK_f,         spawn, SHCMD("firefox") },
-	{ MODKEY|ShiftMask,  XK_g,         spawn, SHCMD("xedit") },
 	{ MODKEY|ShiftMask,  XK_j,         spawn, SHCMD("terminal bc -q $HOME/box/bc.library") },
 	{ MODKEY,            XK_y,         spawn, SHCMD("clip") },
 	{ MODKEY,            XK_d,         spawn, SHCMD("popup-cal12") },
@@ -195,8 +191,8 @@ static Key keys[] = {
 
   	/* Multimedia */
 	{ 0,   XK_Print,                 spawn, SHCMD("dmenu-screenshot") },
-	{ 0,   XF86XK_MonBrightnessUp,   spawn, SHCMD("xbacklight -inc 5") },
-	{ 0,   XF86XK_MonBrightnessDown, spawn, SHCMD("xbacklight -dec 5") },
+	{ 0,   XF86XK_MonBrightnessUp,   spawn, SHCMD("brightnessctl set 5%+") },
+	{ 0,   XF86XK_MonBrightnessDown, spawn, SHCMD("brightnessctl set 5%-") },
 	{ 0,   XF86XK_AudioRaiseVolume,  spawn, SHCMD("pulsemixer --change-volume +5 && xroot-update") },
 	{ 0,   XF86XK_AudioLowerVolume,  spawn, SHCMD("pulsemixer --change-volume -5 && xroot-update") },
 	{ 0,   XF86XK_AudioMute,         spawn, SHCMD("pulsemixer --toggle-mute && xroot-update") },

@@ -18,12 +18,10 @@ while true; do
 done &
 
 # Extra settings
-xsetroot -cursor_name left_ptr &
 setxkbmap -option compose:ralt
 setxkbmap -option caps:swapescape
-xbacklight -set 30
+brightnessctl set 30%
 xset s off -dpms
-xrdb -merge .Xresources
 
 # Background and time
 sleep 0.05
@@ -35,5 +33,5 @@ while read text; do
 done &
 
 xbanish &
-telegram-desktop &
+Telegram &
 exec dwm

@@ -17,7 +17,7 @@ pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils 
 # Core tools (non-X)
 coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck
 kbd # For console keyboard configuration
-syncthing fzf sfeed yt-dlp mblaze msmtp oath-toolkit
+syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit
 
 # Development tools
 build-base git gdb valgrind clang20 python3 rust cargo hare
@@ -27,12 +27,12 @@ libx11-dev libxft-dev libxinerama-dev
 # Xorg
 xorg-server
 xinit eudev mesa-dri-gallium xf86-video-intel xf86-input-libinput xf86-input-synaptics
-setxkbmap xsel xbanish xsetroot xwallpaper xev slock
+setxkbmap xsel xbanish xsetroot xwallpaper xev slock brightnessctl
 
 # X applications
 firefox libreoffice telegram-desktop vlc imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
-arandr iwgtk
+arandr #iwgtk
 
 # Fonts, but like a gazillion of them
 font-terminus font-noto font-noto-extra font-arabic-misc
