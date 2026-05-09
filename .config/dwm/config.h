@@ -182,7 +182,6 @@ static Key keys[] = {
 	{ MODKEY,            XK_d,         spawn, SHCMD("popup-cal12") },
 	{ MODKEY,            XK_q,         spawn, SHCMD("dmenu-unmount") },
 	{ MODKEY,            XK_e,         spawn, SHCMD("dmenu-bookmarks") },
-	{ MODKEY|ShiftMask,  XK_u,         spawn, SHCMD("feed menu") },
 
 	/* System settings */
 	{ MODKEY|ShiftMask,  XK_w,  spawn, SHCMD("popup-terminal iwctl") },
