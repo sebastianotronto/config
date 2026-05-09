@@ -11,7 +11,7 @@ export HISTSIZE=10000
 # Standard stuff and variables for my scripts
 export EDITOR=vi
 export VISUAL=vi
-export XEDIT=xedit
+#export XEDIT=some-gui-editor  # Do not set to "xedit", recursion
 export NOTIFY=notify
 export OPENER=open-file
 export BROWSER=firefox

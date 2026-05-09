@@ -176,6 +176,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,  XK_Return,    spawn, SHCMD("terminal") },
 	{ MODKEY|ShiftMask,  XK_backslash, spawn, SHCMD("popup-terminal") },
 	{ MODKEY|ShiftMask,  XK_f,         spawn, SHCMD("firefox") },
+	{ MODKEY|ShiftMask,  XK_g,         spawn, SHCMD("xedit") },
 	{ MODKEY|ShiftMask,  XK_j,         spawn, SHCMD("terminal bc -q $HOME/box/bc.library") },
 	{ MODKEY,            XK_y,         spawn, SHCMD("clip") },
 	{ MODKEY,            XK_d,         spawn, SHCMD("popup-cal12") },
