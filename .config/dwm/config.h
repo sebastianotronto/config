@@ -137,6 +137,7 @@ focusmaster(const Arg *arg)
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
+	{ MODKEY,                       XK_o,      spawn,          SHCMD("open-file") },
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd} },
 	{ MODKEY,                       XK_n,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
