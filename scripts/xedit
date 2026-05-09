@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# My X editor
+# Requires: terminal
+
+editor=${EDITOR:-${VISUAL:-vi}}
+xed=${XEDIT:-"terminal "$editor""}
+
+$xed "$@"

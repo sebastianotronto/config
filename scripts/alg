@@ -1,0 +1,627 @@
+#if 0
+
+bin="$(mktemp)"
+cc -o "$bin" -x c "$(realpath $0)"
+"$bin"
+
+exit 0
+#endif
+
+/*
+TODO:
+- fix: move_and... should be able to read tokens in quotes (with spaces)
+- readline capabilities
+*/
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+#define LINEMAXLEN 10000
+
+#define ALGFILE "/home/sebastiano/box/speedcubing/bld/algs/algs.txt"
+#if 0
+#define INFILE "/home/sebastiano/box/speedcubing/bld/algs/algs.backup"
+#else
+#define INFILE ALGFILE
+#endif
+#define EDITOR "vi"
+
+char *alias[256][10] = {
+	['a'] = { "FU", "FUL", "FLU", "Fu", "Ful", "Flu", "FUl", NULL },
+	['b'] = { "UF", "UBL", "ULB", "Ur", "Ufr", "Ulb", "URb", NULL },
+	['c'] = { "UL", "UFL", "ULF", "Ul", "Ufl", "Ulf", "ULf",
+	    "corners", NULL },
+	['d'] = { "UB", "UBR", "URB", "Ub", "Ubr", "Urb", "UBl", NULL },
+	['e'] = { "FD", "FDR", "FRD", "Fd", "Frd", "Fdr", "FDr",
+	    "edges", NULL },
+	['f'] = { "RD", "RBD", "RDB", "Rd", "Rdb", "Rbd", "RDb",
+	    "2flips", NULL },
+	['g'] = { "LD", "LDF", "LFD", "Ld", "Ldf", "Lfd", "LDf", NULL },
+	['h'] = { NULL },
+	['i'] = { "FR", "FUR", "FRU", "Fr", "Fur", "Fru", "FRu", NULL },
+	['j'] = { "LU", "LUF", "LFU", "Lu", "Luf", "Lfu", "LUb", NULL },
+	['k'] = { "RB", "RUB", "RBU", "Rb", "Rub", "Rbu", "RBu", NULL },
+	['l'] = { "DF", "DFR", "DRF", "Df", "Dfr", "Drf", "DFl", NULL },
+	['m'] = { "DB", "DBR", "DRB", "Db", "Dbr", "Drb", "DBr",
+	    "midges", NULL },
+	['n'] = { "DR", "DFL", "DLF", "Dr", "Dfl", "Dlf", "DRf", NULL },
+	['o'] = { "FL", "FLD", "FDL", "Fl", "Fdl", "Fld", "FLd", NULL },
+	['p'] = { "DL", "DLB", "DBL", "Dl", "Dbl", "Dlb", "DLb",
+	    "parity", NULL },
+	['q'] = { NULL },
+	['r'] = { "BU", "BUR", "BRU", "Bu", "Bur", "Bru", "BUr", NULL },
+	['s'] = { "BD", "BUL", "BLU", "Bd", "Bul", "Blu", "BDl", NULL },
+	['t'] = { "BL", "BLD", "BDL", "Bl", "Bdl", "Bld", "BLu",
+	    "tcenters", NULL },
+	['u'] = { "BR", "BRD", "BDR", "Br", "Brd", "Bdr", "BRd", NULL },
+	['v'] = { "LF", "LUB", "LBU", "Lf", "Lub", "Lbu", "LFu", NULL },
+	['w'] = { "LB", "LBD", "LDB", "Lb", "Ldb", "Lbd", "LBd",
+	    "wings", NULL },
+	['x'] = { "RU", "RFU", "RUF", "Ru", "Rfu", "Ruf", "RUf",
+	    "xcenters", NULL },
+	['y'] = { "UR", "UFR", "URF", "Uf", "Ubl", "Ulb", "UFr", NULL },
+	['z'] = { "RF", "RDF", "RFD", "Rf", "Rdf", "Rfd", "RFd", NULL },
+	['3'] = { "3twists", NULL },
+};
+
+struct node {
+	char *key;
+	size_t mchildren;
+	size_t nchildren;
+	struct node *child;
+};
+
+enum command {
+	BACK,
+	EDIT,
+	EXPORT,
+	HELP,
+	PRINT,
+	QUIT,
+	RENAME,
+	NONE,
+	UNKNOWN
+};
+
+char command_aliases[] = {
+	[BACK] = 'b',
+	[EDIT] = 'e',
+	[EXPORT] = 'x',
+	[HELP] = 'h',
+	[PRINT] = 'p',
+	[QUIT] = 'q',
+	[RENAME] = 'r',
+};
+
+const char *HELPSTR =
+"This program can be used interactively to navigate and modify a collection\n"
+"of data organized as a tree. This data is saved to a file in a custom\n"
+"text-based format. At any given time, the program points to one node in the\n"
+"tree (the current node), and the user can give instructions.\n"
+"\n"
+"An instruction has the following syntax: [movement] [command]\n"
+"\n"
+"A movement can be specified either by a space-separated list of keys,\n"
+"where keys containing spaces must be wrapped in double quotes, or by a\n"
+"single word, each letter of which is translated to a key using the\n"
+"alias table. Only if a word does not match the key of any child of the\n"
+"current node is it interpreted as a list of aliases.\n"
+"\n"
+"Commands are a single letter preceded by a colon. For example ':q' quits\n"
+"the program. See below for a list of commands.\n"
+"\n"
+"If only a command is specified, it is exectued on the current node.\n"
+"\n"
+"If only a movement is specified, the current node is changed to the one\n"
+"specified by the movement. If the new current node is terminal, i.e. all\n"
+"its children are childless, a ':p' command is implied and is exectued as\n"
+"if 'movement :p' was given.\n"
+"\n"
+"If both a movement and a command are specified, the movement is applied,\n"
+"then the command is exectued, and finally the current node is changed\n"
+"back to the previous node.\n"
+"\n"
+"List of commands:\n"
+"  - :b Move back to the parent node (usually used without movement).\n"
+"  - :e Edit current node. Can be used to add or remove children.\n"
+"  - :x Export to csv.\n"
+"  - :h Print this help message.\n"
+"  - :p Print the key of the node.\n"
+"  - :q Quit (exit the program).\n"
+"  - :r Rename (edit the key of the current node).\n"
+;
+
+int is_space(char c) {
+	return c == ' ' || c == '\t' || c == '\n';
+}
+
+int has_spaces(const char *k) {
+	for (const char *c = k; *c; c++)
+		if (is_space(*c))
+			return 1;
+	return 0;
+}
+
+int is_whitespace_only(const char *k) {
+	for (const char *c = k; *c; c++)
+		if (!is_space(*c))
+			return 0;
+	return 1;
+}
+
+void write_key(FILE *f, const char *k) {
+	if (has_spaces(k))
+		fprintf(f, "\"%s\"", k);
+	else
+		fprintf(f, "%s", k);
+}
+
+void write_indent(FILE *f, size_t n) {
+	for (size_t i = 0; i < n; i++)
+		fprintf(f, "  ");
+}
+
+int is_terminal(const struct node *n) {
+	for (size_t i = 0; i < n->nchildren; i++)
+		if (n->child[i].nchildren > 0)
+			return 0;
+	return 1;
+}
+
+void write_node(FILE *f, const struct node *n, size_t ntabs, int s) {
+	write_indent(f, ntabs);
+	fprintf(f, "{ ");
+	write_key(f, n->key);
+	if (is_terminal(n)) {
+		for (size_t i = 0; i < n->nchildren; i++) {
+			fprintf(f, " ");
+			write_key(f, n->child[i].key);
+		}
+		fprintf(f, " }\n");
+	} else {
+		fprintf(f, "\n");
+		for (size_t i = 0; i < n->nchildren; i++) {
+			if (s && !is_terminal(&n->child[i])) {
+				write_indent(f, ntabs+1);
+				fprintf(f, "{ ");
+				write_key(f, n->child[i].key);
+				fprintf(f, " { ... } }\n");
+			} else {
+				write_node(f, &n->child[i], ntabs+1, s);
+			}
+		}
+		write_indent(f, ntabs);
+		fprintf(f, "}\n");
+	}
+}
+
+void delete_node(struct node *n) {
+	if (n->child) {
+		for (size_t i = 0; i < n->nchildren; i++)
+			delete_node(&n->child[i]);
+		free(n->child);
+	}
+	n->nchildren = n->mchildren = 0;
+	free(n->key);
+}
+
+void grow_children_if_needed(struct node *n) {
+	if (n->nchildren == n->mchildren) {
+		size_t m = MAX(1, 2*n->mchildren);
+		n->child = realloc(n->child, m * sizeof(struct node));
+		memset(n->child + n->nchildren, 0,
+		    (m - n->nchildren) * sizeof(struct node));
+		n->mchildren = m;
+	}
+}
+
+void add_child(struct node *n, struct node c) {
+	grow_children_if_needed(n);
+	n->child[n->nchildren++] = c;
+}
+
+void parse_error(struct node *n, const char *a, size_t *i, size_t len) {
+	if (*i == len)
+		printf("Error: end of file reached unexpectedly.\n");
+	else
+		printf("Error: unexpected '%c' at position %zu.\n",
+		    a[*i], *i);
+
+	if (n != NULL) {
+		printf("Error occurred when reading node with key: ");
+		write_key(stdout, n->key);
+		printf("\n");
+	}
+}
+
+int read_key(struct node *n, const char *a, size_t *i, size_t len) {
+	while (is_space(a[*i])) (*i)++;
+	if (a[*i] == '{') {
+		printf("Error: missing key at %zu\n", *i);
+		return 0;
+	}
+	bool q = a[*i] == '"';
+	if (q) (*i)++;
+	size_t start = *i;
+	while (*i < len && ((q && a[*i] != '"') || (!q && !is_space(a[*i]))))
+		(*i)++;
+	size_t klen = *i - start;
+	n->key = malloc(klen+1);
+	memcpy(n->key, a+start, klen);
+	n->key[klen] = '\0';
+	if (*i == len) {
+		printf("Error: EOF in key starting at %zu "
+		       "(begins with '%.5s').\n", start, n->key);
+		return 0;
+	}
+	if (q)
+		(*i)++; // Skip quote
+	return 1;
+}
+
+int read_node(struct node *n, const char *a, size_t *i, size_t len) {
+	while (is_space(a[*i])) (*i)++;
+	if (a[*i] != '{') {
+		printf("Error: expected '{' at %zu, got '%c'.\n", *i, a[*i]);
+		return 0;
+	}
+	(*i)++;
+	if (!read_key(n, a, i, len))
+		return 0;
+	for (; *i < len; (*i)++) {
+		switch (a[*i]) {
+		case ' ':
+		case '\t':
+		case '\n':
+			continue;
+		case '}':
+			(*i)++;
+			return 1;
+		case '{':
+			grow_children_if_needed(n);
+			read_node(&n->child[n->nchildren++], a, i, len);
+			break;
+		default:
+			grow_children_if_needed(n);
+			read_key(&n->child[n->nchildren++], a, i, len);
+		}
+	}
+	return 1;
+}
+
+int read_file(struct node *n) {
+	FILE *f = fopen(INFILE, "r");
+	fseek(f, 0, SEEK_END);
+	size_t fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+
+	char *a = malloc(fsize);
+	fread(a, 1, fsize, f);
+
+	size_t i = 0;
+	int result = read_node(n, a, &i, fsize);
+
+	free(a);
+	return result;
+}
+
+void write_tree(const struct node *root) {
+	FILE *f = fopen(ALGFILE, "w");
+	write_node(f, root, 0, 0);
+	/* printf("Data written to %s.\n", ALGFILE); */
+	fclose(f);
+}
+
+struct node *match_children(const char *w, size_t wlen, const struct node *n) {
+	for (size_t i = 0; i < n->nchildren; i++) {
+		if (strlen(n->child[i].key) != wlen)
+			continue;
+		if (!strncmp(w, n->child[i].key, wlen))
+			return &n->child[i];
+	}
+	return NULL;
+}
+
+int move_stack(const char *w, size_t wlen, struct node *stack[], size_t *top) {
+	struct node *c = match_children(w, wlen, stack[*top]);
+	if (c) {
+		stack[++(*top)] = c;
+		return 1;
+	}
+
+	int matched = 1;
+	for (size_t i = 0; matched && i < wlen; i++) {
+		matched = 0;
+		if ((w[i] < 'a' || w[i] > 'z') && (w[i] < '0' && w[i] > '9'))
+			return 1;
+		for (size_t j = 0; alias[(unsigned)w[i]][j]; j++) {
+			c = match_children(alias[(unsigned)w[i]][j],
+			    strlen(alias[(unsigned)w[i]][j]), stack[*top]);
+			if (c) {
+				stack[++(*top)] = c;
+				matched = 1;
+				break;
+			}
+		}
+	}
+	return matched;
+}
+
+int move_and_parse_command(const char *line,
+    struct node *stack[], size_t *stack_top) {
+	size_t wstart, wend = 0;
+	while (line[wend] && line[wend] != ':') {
+		while (is_space(line[wend])) wend++;
+		wstart = wend;
+		while (!is_space(line[wend])) wend++;
+		if (!move_stack(line+wstart, wend-wstart, stack, stack_top)) {
+			printf("Invalid key '");
+			for (size_t i = wstart; i < wend; i++)
+				printf("%c", line[i]);
+			printf("'.\n");
+			return NONE;
+		}
+		while (is_space(line[wend])) wend++;
+	}
+
+	if (!line[wend])
+		return is_terminal(stack[*stack_top]) ? PRINT : NONE;
+	for (size_t i = 0; i < NONE; i++)
+		if (command_aliases[i] == line[wend+1])
+			return i;
+	printf("Unknown command.\n");
+	return UNKNOWN;
+}
+
+void print_node(struct node *n) {
+	if (is_terminal(n)) {
+		for (size_t i = 0; i < n->nchildren; i++)
+			printf("%s\n", n->child[i].key);
+	} else {
+		write_node(stdout, n, 0, 1);
+	}
+}
+
+void delete_child(struct node *n, size_t i) {
+	delete_node(&n->child[i]);
+	for (size_t j = i+1; j < n->nchildren; j++)
+		n->child[j-1] = n->child[j];
+	n->nchildren--;
+}
+
+void replace_child(struct node *n, size_t i, size_t j) {
+	if (i >= j) {
+		printf("Cannot replace child in wrong order.\n");
+		return;
+	}
+	delete_node(&n->child[j]);
+	n->child[j] = n->child[i];
+	n->nchildren--;
+	for (size_t k = i; k < n->nchildren; k++)
+		n->child[k] = n->child[k+1];
+}
+
+void remove_duplicate_children(struct node *n) {
+	for (size_t i = 0; i < n->nchildren; i++) {
+		for (size_t j = i + 1; j < n->nchildren; j++) {
+			if (!strcmp(n->child[i].key, n->child[j].key)) {
+				replace_child(n, i, j);
+				i--;
+				j--;
+				break;
+			}
+		}
+	}
+}
+
+int edit(struct node *n) {
+	/* create tmp file with algs, one by line */
+	char path[50] = "/tmp/alg.XXXXXXX";
+	int fd = mkstemp(path);
+	if (fd == -1) {
+		printf("Could not create tmp file for editing.\n");
+		return 0;
+	}
+	FILE *tmp = fdopen(fd, "w+");
+	for (size_t i = 0; i < n->nchildren; i++)
+		fprintf(tmp, "%s\n", n->child[i].key);
+	fclose(tmp);
+	close(fd);
+
+	/* fork and open editor */
+	int cpid = fork();
+	if (cpid == 0) {
+		execlp(EDITOR, EDITOR, path, (char *)NULL);
+	} else {
+		wait(NULL);
+		tmp = fopen(path, "r");
+		if (!tmp) {
+			printf("Could not read edited algs, aborting.\n");
+			return 0;
+		}
+
+		size_t oldn = n->nchildren;
+
+		/* Append the new children */
+		char line[LINEMAXLEN];
+		for (size_t i = 0; fgets(line, LINEMAXLEN, tmp); i++) {
+			size_t len = strlen(line);
+			struct node c = {0};
+			c.key = malloc(len);
+			memcpy(c.key, line, len);
+			c.key[len-1] = '\0';
+			add_child(n, c);
+		}
+		fclose(tmp);
+
+		/* Delete removed node, asking for confirmation */
+		for (size_t i = oldn-1; i != SIZE_MAX; i--) {
+			int found = 0;
+			for (size_t j = oldn; j < n->nchildren; j++)
+				found = found ||
+				    !strcmp(n->child[i].key, n->child[j].key);
+			if (!found) {
+				int d = 1;
+				if (!is_terminal(n)) {
+					printf("Confirm delete node ");
+					fflush(stdout);
+					write_key(stdout, n->child[i].key);
+					printf("? [y/N] ");
+					fgets(line, LINEMAXLEN, stdin);
+					d = line[0] == 'y' || line[0] == 'Y';
+				}
+				if (d) {
+					delete_child(n, i);
+					oldn--;
+				}
+			}
+		}
+
+		remove_duplicate_children(n);
+	}
+
+	return 1;
+}
+
+int is_table(const struct node *n) {
+	return n->nchildren != 0 &&
+	       n->child[0].nchildren != 0 &&
+	       n->child[0].child[0].nchildren != 0 &&
+	       is_terminal(&(n->child[0].child[0]));
+}
+
+struct node *find_child(const struct node *n, const char *k) {
+	for (size_t i = 0; i < n->nchildren; i++) {
+		if (!strcmp(n->child[i].key, k))
+			return &n->child[i];
+	}
+	return NULL;
+}
+
+void export(const struct node *n) {
+	if (!is_table(n)) {
+		printf("Cannot export: not a table.\n");
+		return;
+	}
+
+	char fname[50];
+	sprintf(fname, "%.45s.csv", n->key);
+	FILE *f = fopen(fname, "w");
+
+	/* Print first row (header) */
+	fprintf(f, "\"\",");
+	for (size_t i = 0; i < n->nchildren; i++)
+		fprintf(f, "\"%s\",", n->child[i].key);
+	fprintf(f, "\n");
+
+	/* Fill the rest of the table */
+	for (size_t i = 0; i < n->nchildren; i++) {
+		fprintf(f, "\"%s\",", n->child[i].key);
+		for (size_t j = 0; j < n->nchildren; j++) {
+			const struct node *c = find_child(
+			    &n->child[i], n->child[j].key);
+			if (c == NULL || c->nchildren == 0)
+				fprintf(f, "\"\",");
+			else
+				fprintf(f, "\"%s\",", c->child[0].key);
+		}
+		fprintf(f, "\n");
+	}
+
+	fclose(f);
+}
+
+int rename_node(struct node *n) {
+	printf("Old key: ");
+	write_key(stdout, n->key);
+	printf("\nNew key (empty line to cancel): ");
+
+	char k[LINEMAXLEN];
+	size_t len = fgets(k, LINEMAXLEN, stdin) == NULL ? 0 : strlen(k)-1;
+	k[len] = '\0'; /* Replace \n with \0 */
+	if (len == 0) {
+		printf("\nRenaming cancelled, old key kept.\n");
+		return 0;
+	} else {
+		if (strlen(n->key) < len)
+			n->key = realloc(n->key, len+1);
+		memcpy(n->key, k, len+1);
+		return 1;
+	}
+}
+
+void main_loop(struct node *root) {
+	char line[LINEMAXLEN];
+	struct node *stack[20] = { root };
+	size_t stack_top = 0;
+	while (1) {
+		for (size_t i = 0; i <= stack_top; i++) {
+			write_key(stdout, stack[i]->key);
+			printf(" ");
+		}
+		printf("> ");
+		fflush(stdout);
+		if (fgets(line, LINEMAXLEN, stdin) == NULL) {
+			printf("\n");
+			return;
+		}
+		if (is_whitespace_only(line)) continue;
+		int oldtop = stack_top;
+		int command = move_and_parse_command(line, stack, &stack_top);
+
+		switch (command) {
+			case BACK:
+				if (stack_top > 0)
+					oldtop = --stack_top;
+				else
+					printf("Already at top of stack.\n");
+				break;
+			case EDIT:
+				if(edit(stack[stack_top]))
+					write_tree(root);
+				break;
+			case EXPORT:
+				export(stack[stack_top]);
+				break;
+			case HELP:
+				printf("%s", HELPSTR);
+				break;
+			case PRINT:
+				print_node(stack[stack_top]);
+				break;
+			case QUIT:
+				return;
+			case RENAME:
+				if (rename_node(stack[stack_top]))
+					write_tree(root);
+				break;
+			case NONE:
+				oldtop = stack_top;
+			case UNKNOWN:
+			default:
+				break;
+		}
+		stack_top = oldtop;
+	}
+}
+
+int main() {
+	struct node root = {0};
+	if (!read_file(&root)) {
+		printf("Error reading data from file.\n");
+		return 1;
+	}
+	printf("Data read from %s\n", INFILE);
+
+	main_loop(&root);
+
+	delete_node(&root);
+	return 0;
+}
