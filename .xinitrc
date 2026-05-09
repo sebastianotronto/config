@@ -34,4 +34,5 @@ done &
 
 xbanish &
 Telegram &
-exec dwm
+#exec dwm
+exec dbus-launch --exit-with-session dwm
