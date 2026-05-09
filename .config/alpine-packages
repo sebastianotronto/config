@@ -22,12 +22,13 @@ syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit
 # Development tools
 build-base git gdb valgrind clang20 python3 rust cargo hare
 lowdown darkhttpd # Both used for updating my website
-libx11-dev libxft-dev libxinerama-dev
+openjdk25
 
 # Xorg
 xorg-server
 xinit eudev mesa-dri-gallium xf86-video-intel xf86-input-libinput xf86-input-synaptics
 setxkbmap xsel xbanish xsetroot xwallpaper xev slock brightnessctl
+libx11-dev libxft-dev libxinerama-dev # For building dwm and st
 
 # X applications
 firefox libreoffice telegram-desktop vlc imv-x11
