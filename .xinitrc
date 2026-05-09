@@ -22,6 +22,7 @@ setxkbmap -option compose:ralt
 setxkbmap -option caps:swapescape
 brightnessctl set 30%
 xset s off -dpms
+xrdb -merge ~/.Xresources
 
 # Background and time
 sleep 0.05
