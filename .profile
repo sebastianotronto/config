@@ -52,3 +52,6 @@ n()     { mshow .+1 | templess; }
 
 # Session cookies are kept in .ssh
 [ -f $HOME/.ssh/sessions ] && . $HOME/.ssh/sessions
+
+# startx if in tty1
+[ "$(tty)" = "/dev/tty1" ] && startx
