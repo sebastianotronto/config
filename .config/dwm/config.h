@@ -189,6 +189,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,  XK_v,  spawn, SHCMD("popup-terminal pulsemixer") },
 	{ MODKEY|ShiftMask,  XK_b,  spawn, SHCMD("popup-terminal bluetoothctl") },
 	{ MODKEY|ShiftMask,  XK_p,  spawn, SHCMD("popup-terminal top") },
+	{ MODKEY,            XK_space, spawn, SHCMD("xkfix") },
 
   	/* Multimedia */
 	{ 0,   XK_Print,                 spawn, SHCMD("dmenu-screenshot") },

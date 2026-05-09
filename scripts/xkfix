@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Swap Esc and Caps Lock and set compose key to Right Alt
+# Requires: setxkbmap
+
+setxkbmap -option caps:swapescape
+setxkbmap -option compose:ralt

@@ -18,8 +18,7 @@ while true; do
 done &
 
 # Extra settings
-setxkbmap -option compose:ralt
-setxkbmap -option caps:swapescape
+xkfix # From scripts
 brightnessctl set 30%
 xset s off -dpms
 xrdb -merge ~/.Xresources
