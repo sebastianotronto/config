@@ -36,10 +36,5 @@ firefox libreoffice telegram-desktop vlc imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
 arandr #iwgtk
 
-# Fonts, but like a gazillion of them
-font-terminus font-noto font-noto-extra font-arabic-misc
-font-misc-cyrillic font-mutt-misc font-screen-cyrillic
-font-winitzki-cyrillic font-cronyx-cyrillic font-noto-arabic
-font-noto-armenian font-noto-cherokee font-noto-devanagari
-font-noto-ethiopic font-noto-georgian font-noto-hebrew font-noto-lao
-font-noto-malayalam font-noto-tamil font-noto-thaana font-noto-thai
+# Fonts
+font-terminus font-noto font-noto-all font-noto-extra font-noto-cjk font-noto-cjk-extra
