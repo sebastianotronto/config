@@ -32,7 +32,7 @@ libx11-dev libxft-dev libxinerama-dev # For building dwm and st
 dbus-x11
 
 # X applications
-firefox libreoffice telegram-desktop vlc imv-x11
+firefox libreoffice telegram-desktop vlc-qt imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
 arandr #iwgtk
 
