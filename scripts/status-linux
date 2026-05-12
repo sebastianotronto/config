@@ -37,7 +37,7 @@ fi
 # Thank you iwctl for saving us from this dreadful existence
 network="$(iwctl station wlan0 show | grep 'Connected network' | \
 	awk '{$1=$2=""; $0=$0; print}' | sed 's/^ .//')"
-if [ "$(cat /sys/class/net/eth0/carrier)" = 1 ]; then
+if [ "$(cat /sys/class/net/eth0/carrier 2>/dev/null)" = 1 ]; then
 	if [ -z "$network" ]; then
 		network="eth"
 	else
