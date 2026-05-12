@@ -17,8 +17,9 @@ pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils 
 
 # Core tools (non-X)
 coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck
-kbd # For console keyboard configuration
+kbd  # For console keyboard configuration
 syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit
+lynx
 
 # Development tools
 build-base git gdb valgrind clang20 python3 rust cargo hare
@@ -36,7 +37,8 @@ libx11-dev libxft-dev libxinerama-dev  # For building dwm and st
 dbus-x11
 
 # X applications
-firefox libreoffice telegram-desktop vlc-qt imv-x11
+firefox
+libreoffice telegram-desktop vlc-qt imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
 arandr
 
