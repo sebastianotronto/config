@@ -1,9 +1,10 @@
 # Base system packages (installed by default)
 alpine-base busybox-mdev-openrc doas grub-efi openssh openssl
 
-# Firmware (installed by default, system-dependent)
+# Firmware and (installed by default, system-dependent)
 linux-firmware-i915 linux-firmware-intel linux-firmware-mediatek linux-firmware-other
-linux-firmware-rtl_bt linux-firmware-rtl_nic linux-firmware-xe linux-lts
+linux-firmware-rtl_bt linux-firmware-rtl_nic linux-firmware-xe
+linux-lts
 
 # Documentation
 docs mandoc-apropos
@@ -21,20 +22,20 @@ syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit
 
 # Development tools
 build-base git gdb valgrind clang20 python3 rust cargo hare
-lowdown darkhttpd # Both used for updating my website
-openjdk25
+lowdown darkhttpd  # Both used for updating my website
+openjdk25  # Also used for TNoodle
 
 # Xorg
 xorg-server
 xinit eudev mesa-dri-gallium xf86-video-intel xf86-input-libinput xf86-input-synaptics
 setxkbmap xsel xbanish xsetroot xwallpaper xev slock brightnessctl capitaine-cursors
-libx11-dev libxft-dev libxinerama-dev # For building dwm and st
+libx11-dev libxft-dev libxinerama-dev  # For building dwm and st
 dbus-x11
 
 # X applications
 firefox libreoffice telegram-desktop vlc-qt imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
-arandr #iwgtk
+arandr
 
 # Fonts
 font-terminus font-noto font-noto-all font-noto-extra font-noto-cjk font-noto-cjk-extra
