@@ -1,3 +1,4 @@
+# Standard  options and environment variables
 set -o vi
 
 PATH="$HOME/scripts:$PATH"
@@ -11,7 +12,6 @@ export HISTSIZE=10000
 # Standard stuff and variables for my scripts
 export EDITOR=vi
 export VISUAL=vi
-#export XEDIT=some-gui-editor  # Do not set to "xedit", recursion
 export NOTIFY=notify
 export OPENER=open-file
 export BROWSER=firefox
@@ -25,14 +25,17 @@ export LYNX_CFG="$XDG_CONFIG_HOME/lynx/lynx.cfg"
 export LYNX_LSS="$XDG_CONFIG_HOME/lynx/lynx.lss"
 export PYTHON_COLORS=0
 
-### Aliases and functions
-alias bc='bc -q /home/sebastiano/box/bc.library'
+# Aliases
 alias o='open-file'
+alias f='feed get && feed -m fzf menu'
+alias w='iwctl station wlan0 get-networks'
+alias c='iwctl station wlan0 connect'
+alias d='iwctl station wlan0 disconnect'
+
+alias bc='bc -q /home/sebastiano/box/bc.library'
 alias rm='trash rm'
 alias ls='ls --color=auto'
 alias clip='clip -m fzf'
-alias bm='dmenu-bookmarks -m fzf'
-alias f='feed get && feed -m fzf menu'
 alias svi='vi "+so $HOME/.virc-spaces"'
 
 # Email management (mblaze)
