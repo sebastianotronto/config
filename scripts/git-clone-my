@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Clone one of my git repositories and setup multiple remote
+# Usage: git-clone-my REPO
+
+pull_remote="git@tronto.net:"
+push="git@tronto.net git@github.com:sebastianotronto/"
+
+if [ -z "$1" ]; then
+	echo "git-clone-my: please specify a valid repository"
+fi
+
+git clone "$pull_remote"$1.git || exit 1
+cd $1
+for repo in $push; do
+	git remote set-url --push --add origin "$repo"$1.git
+done
