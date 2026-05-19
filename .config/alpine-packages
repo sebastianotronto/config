@@ -40,7 +40,7 @@ dbus-x11
 firefox
 libreoffice telegram-desktop vlc-qt imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
-arandr
+arandr blueman
 
 # Fonts
 font-terminus font-noto font-noto-all font-noto-extra font-noto-cjk font-noto-cjk-extra

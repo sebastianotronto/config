@@ -189,7 +189,7 @@ static Key keys[] = {
 	/* System settings */
 	{ MODKEY|ShiftMask,  XK_w,  spawn, SHCMD("popup-terminal iwctl") },
 	{ MODKEY|ShiftMask,  XK_v,  spawn, SHCMD("popup-terminal pulsemixer") },
-	{ MODKEY|ShiftMask,  XK_b,  spawn, SHCMD("popup-terminal bluetoothctl") },
+	{ MODKEY|ShiftMask,  XK_b,  spawn, SHCMD("blueman-manager") },
 	{ MODKEY|ShiftMask,  XK_p,  spawn, SHCMD("popup-terminal top") },
 	{ MODKEY,            XK_space, spawn, SHCMD("xkfix") },
 
