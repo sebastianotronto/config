@@ -26,6 +26,7 @@ build-base git gdb valgrind clang20 python3 rust cargo hare
 lowdown darkhttpd  # Both used for updating my website
 openjdk25  # Also used for TNoodle
 uv
+mariadb mariadb-client
 
 # Qemu
 qemu qemu-img qemu-system-x86_64
