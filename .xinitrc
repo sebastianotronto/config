@@ -36,3 +36,4 @@ xbanish &
 Telegram &
 #exec dwm
 exec dbus-launch --exit-with-session dwm
+rm .serverauth.*
