@@ -1,3 +1,14 @@
+# Bring up ethernet and keep checking if available
+doas ip link set eth1 up
+while true; do
+	if [ "$(cat /sys/class/net/eth1/carrier)" = 1 ]; then
+		if ! doas ip -4 addr show eth1 | grep inet; then
+			doas udhcpc -i eth1 -n && iwctl station wlan0 disconnect
+		fi
+	fi
+	sleep 3
+done &
+
 # Check every minute
 while true; do
 	battery-checknow &
@@ -7,10 +18,6 @@ while true; do
 		notify push "$text"
 	done &
 	sleep 0.01 &
-
-	if [ "$(cat /sys/class/net/eth0/carrier)" = 1 ]; then
-		iwctl station wlan0 disconnect
-	fi
 
 	xroot-update
 
@@ -36,4 +43,3 @@ xbanish &
 Telegram &
 #exec dwm
 exec dbus-launch --exit-with-session dwm
-rm .serverauth.*

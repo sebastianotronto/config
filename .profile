@@ -30,6 +30,7 @@ alias o='open-file'
 alias f='feed get && feed -m fzf menu'
 alias w='iwctl station wlan0 get-networks'
 alias c='iwctl station wlan0 connect'
+alias e='doas ip link set eth1 up && doas udhcpc -i eth1 -n'
 alias d='iwctl station wlan0 disconnect'
 
 alias bc='bc -q /home/sebastiano/box/bc.library'

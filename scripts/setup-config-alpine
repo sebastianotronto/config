@@ -62,7 +62,7 @@ doas mv "$tmp_xorg_file" /etc/X11/xorg.conf.d/40-libinput.conf
 
 tmp_doas_file=$(mktemp)
 cp /etc/doas.d/20-wheel.conf "$tmp_doas_file"
-for c in poweroff reboot; do
+for c in poweroff reboot ip udhcpc; do
 	printf 'permit nopass :wheel as root cmd %s\n' "$c" >> "$tmp_doas_file"
 done
 doas cp "$tmp_doas_file" /etc/doas.d/20-wheel.conf
@@ -116,6 +116,7 @@ NameResolvingService=resolvconf
 EOF
 
 doas mv "$tmp_iwd_file" /etc/iwd/main.conf
+doas cp /dev/null /etc/network/interfaces
 
 doas rc-update add iwd boot
 doas rc-update del networking boot
