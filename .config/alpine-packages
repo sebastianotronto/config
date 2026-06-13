@@ -1,7 +1,7 @@
 # Base system packages (installed by default)
 alpine-base busybox-mdev-openrc doas grub-efi openssh openssl
 
-# Firmware and (installed by default, system-dependent)
+# Firmware and kernel (installed by default, system-dependent)
 linux-firmware-i915 linux-firmware-intel linux-firmware-mediatek linux-firmware-other
 linux-firmware-rtl_bt linux-firmware-rtl_nic linux-firmware-xe
 linux-lts
@@ -9,8 +9,8 @@ linux-lts
 # Documentation
 docs mandoc-apropos
 
-# Wifi and other hardware control
-iwd openresolv pciutils bluez
+# Wifi, printing and other hardware control
+iwd openresolv pciutils bluez cups cups-filters
 
 # Audio
 pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils pulsemixer

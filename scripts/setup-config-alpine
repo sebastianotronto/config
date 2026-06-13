@@ -124,6 +124,12 @@ doas rc-service --ifstarted wpa_supplicant stop
 doas rc-service iwd start
 
 
+print_log "Setting up cups"
+
+doas adduser sebastiano lpadmin
+doas rc-update add cupsd
+
+
 print_log "Setting up bluetooth (see https://wiki.alpinelinux.org/wiki/Bluetooth)"
 
 doas modprobe btusb
