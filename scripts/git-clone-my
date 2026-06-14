@@ -4,7 +4,7 @@
 # Usage: git-clone-my REPO
 
 pull_remote="git@tronto.net:"
-push="git@tronto.net git@github.com:sebastianotronto/"
+push="git@tronto.net: git@github.com:sebastianotronto/"
 
 if [ -z "$1" ]; then
 	echo "git-clone-my: please specify a valid repository"
