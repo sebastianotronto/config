@@ -28,16 +28,23 @@ export PYTHON_COLORS=0
 # Aliases
 alias o='open-file'
 alias f='feed get && feed -m fzf menu'
-alias w='iwctl station wlan0 get-networks'
-alias c='iwctl station wlan0 connect'
-alias e='doas ip link set eth1 up && doas udhcpc -i eth1 -n'
-alias d='iwctl station wlan0 disconnect'
 
 alias bc='bc -q /home/sebastiano/box/bc.library'
 alias rm='trash rm'
 alias ls='ls --color=auto'
 alias clip='clip -m fzf'
 alias svi='vi "+so $HOME/.virc-spaces"'
+
+# Network management
+alias w='iwctl station wlan0 get-networks'
+alias c='iwctl station wlan0 connect'
+alias e='doas ip link set eth1 up && doas udhcpc -i eth1 -n'
+alias d='iwctl station wlan0 disconnect'
+wm() {
+	iwctl station wlan0 get-networks | \
+	grep '^   ' | sed 's/^      //' | sed 's/   .*//' | grep -v '^$' | \
+	fzf | xargs iwctl station wlan0 connect
+}
 
 # Email management (mblaze)
 MAIL=$HOME/mail
