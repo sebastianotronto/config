@@ -39,10 +39,12 @@ libx11-dev libxft-dev libxinerama-dev  # For building dwm and st
 dbus-x11
 
 # X applications
+adwaita-icon-theme
 firefox
 libreoffice telegram-desktop vlc-qt imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
 arandr blueman
+pdfarranger
 
 # Fonts
 font-terminus font-noto font-noto-all font-noto-extra font-noto-cjk font-noto-cjk-extra
