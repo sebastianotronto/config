@@ -42,7 +42,8 @@ alias e='doas ip link set eth1 up && doas udhcpc -i eth1 -n'
 alias d='iwctl station wlan0 disconnect'
 wm() {
 	iwctl station wlan0 get-networks | \
-	grep '^   ' | sed 's/^      //' | sed 's/   .*//' | grep -v '^$' | \
+	uncolor | tail -n -4 | head -n -1 | \
+	grep -e '^   ' | sed 's/^      //' | sed 's/   .*//' | \
 	fzf | xargs iwctl station wlan0 connect
 }
 
