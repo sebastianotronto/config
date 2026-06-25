@@ -37,16 +37,8 @@ alias svi='vi "+so $HOME/.virc-spaces"'
 
 # Network management
 alias w='iwctl station wlan0 get-networks'
-alias c='iwctl station wlan0 connect'
 alias e='doas ip link set eth1 up && doas udhcpc -i eth1 -n'
 alias d='iwctl station wlan0 disconnect'
-wm() {
-	iwctl station wlan0 scan
-	iwctl station wlan0 get-networks | \
-	uncolor | tail -n -4 | head -n -1 | \
-	grep -e '^   ' | sed 's/^      //' | sed 's/   .*//' | \
-	fzf | xargs iwctl station wlan0 connect
-}
 
 # Email management (mblaze)
 MAIL=$HOME/mail

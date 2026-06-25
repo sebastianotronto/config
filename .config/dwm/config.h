@@ -42,6 +42,7 @@ static const Rule rules[] = {
 	{ "TelegramDesktop", NULL, NULL,                 1 << 3,  0, -1 },
 	{ NULL,              NULL, "stfloat",            0,       1, -1 },
 	{ NULL,              NULL, "Picture-in-Picture", TAGMASK, 1, -1 },
+	{ "iwgtk",           NULL, NULL,                 0,       1, -1 },
 };
 
 /* layout(s) */
@@ -187,7 +188,7 @@ static Key keys[] = {
 	{ MODKEY,            XK_e,         spawn, SHCMD("dmenu-bookmarks") },
 
 	/* System settings */
-	{ MODKEY|ShiftMask,  XK_w,  spawn, SHCMD("popup-terminal iwctl") },
+	{ MODKEY|ShiftMask,  XK_w,  spawn, SHCMD("iwgtk") },
 	{ MODKEY|ShiftMask,  XK_v,  spawn, SHCMD("popup-terminal pulsemixer") },
 	{ MODKEY|ShiftMask,  XK_b,  spawn, SHCMD("blueman-manager") },
 	{ MODKEY|ShiftMask,  XK_p,  spawn, SHCMD("popup-terminal top") },
