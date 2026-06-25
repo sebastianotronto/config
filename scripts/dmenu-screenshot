@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Screenshot utility
-# Requires: dmenu (or similar), imagemagick
+# Screenshot utility; if xclip is installed, it copies it to clipboard.
+# Requires: dmenu (or similar), imagemagick, xclip (optional)
 
 # Usage: dmenu-screenshot [-m menu]
 
@@ -37,4 +37,6 @@ else
 fi
 
 [ -n "$t" ] && sleep 0.1 && import $op "$filepath"
-spawn xbanish # This can be removed if you don't use xbanish
+if command -v xclip >/dev/null 2>&1; then
+	xclip -selection clipboard -t image/png < "$filepath"
+fi
