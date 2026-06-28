@@ -20,6 +20,7 @@ coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck
 kbd  # For console keyboard configuration
 rsync syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit-oathtool
 lynx
+efibootmgr
 
 # Development tools
 build-base git gdb valgrind clang20 python3 rust cargo hare
