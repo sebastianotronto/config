@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# Prompts the user to select a known host from $HOME/.ssh/config,
+# then connects to it via a configurable client (default: mosh) and
+# executes a command on the server (default: tmux).
+# Requires: dmenu (or similar), st (or other terminal), an ssh client
+
+# Usage: ssh-terminal [-m menu] [-s ssh_client] [-e server_cmd]
+
+menu="dmenu"
+terminal="st"
+ssh_client="mosh"
+server_cmd="tmux"
+
+usage() {
+	echo "Usage: ssh-terminal [-m MENU] [-s SSH_CLIENT] [-e SERVER_CMD]"
+}
+
+while getopts "e:m:s:" opt; do
+	case "$opt" in
+		e)
+			server_cmd="$OPTARG"
+			;;
+		m)
+			menu="$OPTARG"
+			;;
+		s)
+			ssh_client="$OPTARG"
+			;;
+		*)
+			usage
+			exit 1
+			;;
+	esac
+done
+
+selection=$(grep '^Host' $HOME/.ssh/config | awk '{print $2}' | sort | $menu)
+if [ -n "$selection" ]; then
+	echo "Executing: "
+	echo $terminal "$ssh_client" "$selection" "$server_cmd"
+	$terminal "$ssh_client" "$selection" "$server_cmd"
+fi
