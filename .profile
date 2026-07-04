@@ -59,4 +59,4 @@ n()     { mshow .+1 | templess; }
 [ -f $HOME/.ssh/sessions ] && . $HOME/.ssh/sessions
 
 # startx if in tty1
-[ "$(tty)" = "/dev/tty1" ] && startx
+[ "$(tty)" = "/dev/tty1" ] && \rm -f .serverauth.* && startx
