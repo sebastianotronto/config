@@ -16,7 +16,7 @@ iwd openresolv pciutils bluez cups cups-filters
 pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils pulsemixer
 
 # Core tools (non-X)
-coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck
+coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck mosh
 kbd  # For console keyboard configuration
 rsync syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit-oathtool
 lynx
