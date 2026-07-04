@@ -24,7 +24,7 @@ efibootmgr
 
 # Development tools
 build-base git gdb valgrind clang20 python3 rust cargo hare
-lowdown darkhttpd  # Both used for updating my website
+lowdown darkhttpd lighttpd cgit
 openjdk25  # Also used for TNoodle
 uv
 mariadb mariadb-client
