@@ -33,7 +33,6 @@ alias bc='bc -q /home/sebastiano/box/bc.library'
 alias rm='trash rm'
 alias ls='ls --color=auto'
 alias clip='clip -m fzf'
-alias svi='vi "+so $HOME/.virc-spaces"'
 
 # Network management
 alias w='iwctl station wlan0 get-networks'
