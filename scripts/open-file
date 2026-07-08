@@ -37,7 +37,8 @@ openfile() {
 		audio/*)
 			prog="$music"
 			;;
-		application/pdf | application/postscript | image/vnd.djvu)
+		application/pdf | application/postscript | \
+		image/vnd.djvu | application/epub*)
 			prog="$pdf"
 			;;
 		image/*)
