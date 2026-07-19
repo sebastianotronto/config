@@ -471,9 +471,9 @@ int edit(struct node *n) {
 				int d = 1;
 				if (!is_terminal(n)) {
 					printf("Confirm delete node ");
-					fflush(stdout);
 					write_key(stdout, n->child[i].key);
 					printf("? [y/N] ");
+					fflush(stdout);
 					fgets(line, LINEMAXLEN, stdin);
 					d = line[0] == 'y' || line[0] == 'Y';
 				}
