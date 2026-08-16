@@ -18,7 +18,7 @@ pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils 
 # Core tools (non-X)
 coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck mosh
 kbd  # For console keyboard configuration
-rsync syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit-oathtool
+zip rsync syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit-oathtool
 lynx
 efibootmgr
 
