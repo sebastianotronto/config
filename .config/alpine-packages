@@ -28,6 +28,7 @@ lowdown darkhttpd lighttpd cgit
 openjdk25  # Also used for TNoodle
 uv
 mariadb mariadb-client
+python3-dev imagemagick-dev
 
 # Qemu
 qemu qemu-img qemu-system-x86_64
@@ -45,7 +46,7 @@ firefox
 libreoffice telegram-desktop vlc-qt imv-x11
 zathura-djvu zathura-pdf-mupdf zathura-ps
 arandr blueman iwgtk
-pdfarranger
+pdfarranger gimp
 
 # Fonts
 font-terminus font-noto font-noto-all font-noto-extra font-noto-cjk font-noto-cjk-extra
