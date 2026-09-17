@@ -52,7 +52,7 @@ sht()   { mshow -A text/html $@; }
 n()     { mshow .+1 | templess; }
 
 # nissy build options
-#export NISSY_BUILD_SANITIZE="address,undefined"
+export NISSY_BUILD_SANITIZE="address,undefined"
 
 # Session cookies are kept in .ssh
 [ -f $HOME/.ssh/sessions ] && . $HOME/.ssh/sessions
