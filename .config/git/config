@@ -9,3 +9,5 @@
 	smtpserver = /usr/bin/msmtp
 [push]
 	autoSetupRemote = true
+[format]
+	signOff = yes
