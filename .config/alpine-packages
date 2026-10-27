@@ -16,7 +16,7 @@ iwd openresolv pciutils bluez cups cups-filters
 pulseaudio pulseaudio-bluez pulseaudio-alsa alsa-plugins-pulse pulseaudio-utils pulsemixer
 
 # Core tools (non-X)
-coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck mosh
+coreutils-fmt curl imagemagick ffmpeg tmux ghostscript ncurses shellcheck mosh m4
 kbd  # For console keyboard configuration
 zip rsync syncthing fzf sfeed yt-dlp mblaze msmtp isync oath-toolkit-oathtool
 lynx
@@ -29,6 +29,7 @@ openjdk25  # Also used for TNoodle
 uv
 mariadb mariadb-client
 python3-dev imagemagick-dev
+mdbook php
 
 # Qemu
 qemu qemu-img qemu-system-x86_64
