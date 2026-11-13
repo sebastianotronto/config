@@ -141,10 +141,15 @@ doas rc-service bluetooth start
 print_log "Setting up SyncThing"
 
 tmp_syncthing_file=$(mktemp)
-doas print 'SYNCTHING_USER="sebastiano"\n' > "$tmp_syncthing_file"
-mv "$tmp_syncthing_file" /etc/conf.d/syncthing
+doas printf 'SYNCTHING_USER="sebastiano"\n' > "$tmp_syncthing_file"
+doas mv "$tmp_syncthing_file" /etc/conf.d/syncthing
 doas rc-update add syncthing
-doas rc-service start syncthing
+doas rc-service syncthing start
+
+
+print_log "Creating mail directory"
+
+mkdir -p mail
 
 
 print_log "Generating SSH keys"
@@ -161,11 +166,11 @@ echo "   1. Connect to WiFi again. The default network manager has been"
 echo "      replaced by iwd."
 echo "   2. Add your SSH key to various servers, namely:"
 echo "      1a. Artemisia"
-echo "      1b. pizoc (both regular user and git)"
+echo "      1b. palmar (both regular user and git)"
 echo "      1c. github"
 echo "      1d. lampone"
 echo "   3. Share folders in SyncThing, including but not limited to:"
-echo "      2a. box with Artemisia, pizoc and phone"
+echo "      2a. box with Artemisia, palmar and phone"
 echo "      2b. file-drop with phone"
 echo "   4. Copy your mailbox.org password to .ssh/mailbox.org."
 echo "   5. Log into Firefox account and set up extensions, if needed."
